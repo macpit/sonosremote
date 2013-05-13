@@ -3,6 +3,9 @@
 # lrvic - https://github.com/lrvick/raspi-hd44780/blob/master/hd44780.py
 # LiquidCrystal - https://github.com/arduino/Arduino/blob/master/libraries/LiquidCrystal/LiquidCrystal.cpp
 
+import logging
+logging.basicConfig(level=logging.INFO)
+
 import thread
 
 from Adafruit_I2C import Adafruit_I2C
