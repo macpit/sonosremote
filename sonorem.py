@@ -25,7 +25,8 @@ from core import SonosDiscovery
 
 sonosip = SonosDiscovery()
 iplist=sonosip.get_speaker_ips()
-ip=iplist[random.randint(0, len(iplist))]
+#ip=iplist[random.randint(0, len(iplist))]
+ip=iplist[0]
 
 
 def keys(ip, iplist):
@@ -35,6 +36,14 @@ def keys(ip, iplist):
 
 	print ip
 	print iplist
+
+	# Init display
+	msg = 'Vol %s' % vol
+	lcd.setCursor(0,0)
+	lcd.message(msg)
+	msg = 'Bass %s' % bas
+	lcd.setCursor(8,0)
+	lcd.message(msg)
 
 	while True:
 		if lcd.buttonPressed(lcd.UP):
