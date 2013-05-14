@@ -7,38 +7,38 @@ import logging
 logging.basicConfig(level=logging.INFO)
 
 import thread
-
-from Adafruit_I2C import Adafruit_I2C
+import random
 from time import sleep
 
-from core import SoCo
-from core import SonosDiscovery
+from Adafruit_I2C import Adafruit_I2C
 from Adafruit_CharLCDPlate import Adafruit_CharLCDPlate
 
 lcd = Adafruit_CharLCDPlate()
 lcd.begin(16, 2)
+lcd.clear()
 
 col = (('Red' , lcd.RED) , ('Yellow', lcd.YELLOW), ('Green' , lcd.GREEN),
        ('Teal', lcd.TEAL), ('Blue'  , lcd.BLUE)  , ('Violet', lcd.VIOLET))
 
-lcd.clear()
-lcd.message("SonoS Controll System.")
+from core import SoCo
+from core import SonosDiscovery
 
-lcd.clear()
+sonosip = SonosDiscovery()
+iplist=sonosip.get_speaker_ips()
+ip=iplist[random.randint(0, len(iplist))]
 
-def keys():
 
-	sonos = SoCo('10.0.1.205')
-	sonosp = SonosDiscovery()
-	sonos_sp = sonosp.get_speaker_ips()
+def keys(ip, iplist):
+	sonos = SoCo(ip)
 	vol = sonos.volume()
 	bas = sonos.bass()
 
+	print ip
+	print iplist
 
 	while True:
-
 		if lcd.buttonPressed(lcd.UP):
-			for ip in sonos_sp:
+			for i in iplist:
 				sonos = SoCo(ip)
 				sonos.volume(vol)
 			vol += 1
@@ -47,8 +47,8 @@ def keys():
 			lcd.message(msg)
 
 		if lcd.buttonPressed(lcd.DOWN):
-			for ip in sonos_sp:
-				sonos = SoCo(ip) 
+			for i in iplist:
+				sonos = SoCo(ip)
 				sonos.volume(vol)
 			vol -= 1
 			msg = 'Vol %s' % vol
@@ -56,7 +56,7 @@ def keys():
 			lcd.message(msg)
 
 		if lcd.buttonPressed(lcd.LEFT):
-			for ip in sonos_sp:
+			for i in iplist:
 				sonos = SoCo(ip)
 				sonos.bass(bas)
 			bas -= 1
@@ -65,7 +65,7 @@ def keys():
 			lcd.message(msg)
 
 		if lcd.buttonPressed(lcd.RIGHT):
-			for ip in sonos_sp:
+			for i in iplist:
 				sonos = SoCo(ip)
 				sonos.bass(bas)
 			bas += 1
@@ -75,9 +75,8 @@ def keys():
 
 	sleep(0.1)
 
-def display ():
-
-	sonos = SoCo('10.0.1.205')
+def display (ip):
+	sonos = SoCo(ip)
 	lcd.setCursor(0,1)
 
 	while True:
@@ -92,12 +91,13 @@ def display ():
 			lcd.setCursor(0,1)
 			str = msg[i:(i+16)]
 			lcd.message(str)
+			# Wait for text is start scrolling
 			if i == 0:
 				sleep (2)
 			sleep (0.4)
 
-thread.start_new_thread(keys,())
-thread.start_new_thread(display,())
+thread.start_new_thread(keys,(ip, iplist,))
+thread.start_new_thread(display,(ip,))
 
 while True:
 	pass
