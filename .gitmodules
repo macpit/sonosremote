@@ -1,0 +1,6 @@
+[submodule "SoCo"]
+	path = SoCo
+	url = https://github.com/SoCo/SoCo.git
+[submodule "Adafruit-Raspberry-Pi"]
+	path = Adafruit-Raspberry-Pi
+	url = https://github.com/adafruit/Adafruit-Raspberry-Pi-Python-Code.git
