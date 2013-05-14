@@ -1,4 +1,6 @@
 import logging
+import time
+
 logging.basicConfig(level=logging.DEBUG)
 
 from time import sleep
@@ -25,21 +27,35 @@ lcd.setCursor(0,0)
 lcd.message("Marc Sonos")
 lcd.setCursor(0,1)
 
+t=0
+
+pressed_time = None
+print lcd.buttonPressed(lcd.UP)
+
 while True:
 
-	tr=sonos.get_current_track_info()
-	if tr['artist'] > '':
-		msg=tr['artist']+" , "
-	else:
-		msg="None"+","
-	msg += tr['title']
-	msg += " "
-	mlen=len(msg)
+	if lcd.buttonPressed(lcd.UP):
+		st = time.time()
+		print "UP Start"
+		while True:
+			#sleep (0.5)
+			if lcd.buttonPressed(lcd.UP) == 0:
+				print "Fertig"
+				zeit = time.time() - st
+				print zeit
+				break
 
-	for i in range (0, len(msg)):
-		lcd.setCursor(0,1)
-		str = msg[i:(i+15)]
-		lcd.message(str)
-		if i == 0:
-			sleep (2)
-		sleep (0.4)
+
+	if lcd.buttonPressed(lcd.SELECT):
+		if pressed_time is None:
+			# just pressed
+			pressed_time = time.time()
+		elif time.time() - pressed_time >= 3.0:
+			print "3 sec"
+			break # it's been pressed for 3 seconds
+		elif time.time() - pressed_time >= 1.0:
+			print "1 sec"
+			break
+	else:
+		# not pressed
+		pressed_time = None
