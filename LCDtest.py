@@ -40,10 +40,17 @@ while True:
 		while True:
 			#sleep (0.5)
 			if lcd.buttonPressed(lcd.UP) == 0:
-				print "Fertig"
 				zeit = time.time() - st
 				print zeit
-				break
+				if zeit <= 1:
+					print "Funktion 1sek"
+					break
+				elif zeit <= 2:
+					print "Funktion 2sek"
+					break
+				elif zeit <= 3:
+					print "Funktion 3sek"
+					break
 
 
 	if lcd.buttonPressed(lcd.SELECT):
