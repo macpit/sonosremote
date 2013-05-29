@@ -5,6 +5,7 @@ import logging
 logging.basicConfig()
 
 import thread
+import time
 
 from time import sleep
 
@@ -68,9 +69,13 @@ def set_speaker_default():
 
 
 def keys():
-    sonos = SoCo(get_master_ip())
-    vol = sonos.volume()
-    bas = sonos.bass()
+    """
+
+
+    """
+    _sonos = SoCo(get_master_ip())
+    vol = _sonos.volume()
+    bas = _sonos.bass()
 
     # Init display
     msg = 'Vol %s' % vol
@@ -82,47 +87,58 @@ def keys():
 
     _iplist = get_master_iplist()
 
+    def set_bas(bas):
+        for i in _iplist:
+            sonos = SoCo(i)
+            sonos.bass(bas)
+        msg = 'Bass %s' % bas
+        lcd.setCursor(8, 0)
+        lcd.message(msg)
+
+    def set_vol(vol):
+        for i in _iplist:
+            sonos = SoCo(i)
+            sonos.volume(vol)
+        msg = 'Vol %s' % vol
+        lcd.setCursor(0, 0)
+        lcd.message(msg)
+
     while True:
         if lcd.buttonPressed(lcd.UP):
             vol += 1
-            for i in _iplist:
-                sonos = SoCo(i)
-                sonos.volume(vol)
-            msg = 'Vol %s' % vol
-            lcd.setCursor(0, 0)
-            lcd.message(msg)
+            set_vol(vol)
 
         if lcd.buttonPressed(lcd.DOWN):
             vol -= 1
-            for i in _iplist:
-                sonos = SoCo(i)
-                sonos.volume(vol)
-            msg = 'Vol %s' % vol
-            lcd.setCursor(0, 0)
-            lcd.message(msg)
+            set_vol(vol)
 
         if lcd.buttonPressed(lcd.LEFT):
             bas -= 1
-            for i in _iplist:
-                sonos = SoCo(i)
-                sonos.bass(bas)
-            msg = 'Bass %s' % bas
-            lcd.setCursor(8, 0)
-            lcd.message(msg)
+            set_bas(bas)
 
         if lcd.buttonPressed(lcd.RIGHT):
             bas += 1
-            for i in _iplist:
-                sonos = SoCo(i)
-                sonos.bass(bas)
-            msg = 'Bass %s' % bas
-            lcd.setCursor(8, 0)
-            lcd.message(msg)
+            set_bas(bas)
+
+        if lcd.buttonPressed(lcd.SELECT):
+            _time = time.time()
+            while True:
+                if lcd.buttonPressed(lcd.SELECT) == 0:
+                    _start = time.time() - _time
+                    if _start <= 1:
+                        lcd.backlight(lcd.BLUE)
+                        break
+                    elif _start <= 2:
+                        lcd.backlight(lcd.RED)
+                        break
+                    elif _start <= 3:
+                        lcd.backlight(lcd.OFF)
+                        break
 
     sleep(0.1)
 
 
-def display():
+def scroll_display():
     _sonos = SoCo(get_master_ip())
     lcd.setCursor(0, 1)
 
@@ -143,9 +159,10 @@ def display():
                 sleep(2)
             sleep(0.4)
 
+
 set_speaker_default()
 thread.start_new_thread(keys, (), )
-thread.start_new_thread(display, (), )
+thread.start_new_thread(scroll_display, (), )
 
 while True:
     pass
