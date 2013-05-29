@@ -3,10 +3,6 @@
 import logging
 logging.basicConfig()
 
-import logging
-
-logging.basicConfig(level=logging.INFO)
-
 from core import SoCo
 from core import SonosDiscovery
 
